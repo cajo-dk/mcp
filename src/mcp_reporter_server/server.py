@@ -17,10 +17,10 @@ mcp = FastMCP(SERVER_NAME)
 
 
 @mcp.tool(
-    name="posstReport",
+    name="postReport",
     description="Post a JSON report object to the configured Power Automate webhook.",
 )
-async def posst_report(report: dict[str, Any]) -> dict[str, Any]:
+async def post_report(report: dict[str, Any]) -> dict[str, Any]:
     webhook_url = os.getenv("POWER_AUTOMATE_WEBHOOK_URL", DEFAULT_WEBHOOK_URL)
     timeout = float(os.getenv("REPORT_TIMEOUT_SECONDS", "15"))
 

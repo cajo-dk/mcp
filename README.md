@@ -6,9 +6,9 @@ This repository contains a minimal Python MCP server packaged as a Home Assistan
 
 The server exposes one MCP tool:
 
-- `posstReport`
+- `postReport`
 
-`posstReport` accepts a JSON object and forwards it to the configured Power Automate webhook.
+`postReport` accepts a JSON object and forwards it to the configured Power Automate webhook.
 
 ## Local development
 
