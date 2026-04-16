@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import contextlib
 import os
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+from starlette.routing import Mount
+import uvicorn
 
 DEFAULT_WEBHOOK_URL = (
     "https://default4173759fa7fb45f18231b8f68f45ca.49.environment.api.powerplatform.com:443/"
@@ -13,7 +17,7 @@ DEFAULT_WEBHOOK_URL = (
 )
 
 SERVER_NAME = "home-assistant-mcp-reporter"
-mcp = FastMCP(SERVER_NAME)
+mcp = FastMCP(SERVER_NAME, json_response=True, streamable_http_path="/")
 
 
 @mcp.tool(
@@ -39,4 +43,17 @@ async def post_report(report: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     host = os.getenv("MCP_HOST", "0.0.0.0")
     port = int(os.getenv("MCP_PORT", "8099"))
-    mcp.run(transport="streamable-http", host=host, port=port, path="/mcp")
+
+    @contextlib.asynccontextmanager
+    async def lifespan(app: Starlette):
+        async with mcp.session_manager.run():
+            yield
+
+    app = Starlette(
+        routes=[
+            Mount("/mcp", app=mcp.streamable_http_app()),
+        ],
+        lifespan=lifespan,
+    )
+
+    uvicorn.run(app, host=host, port=port)
