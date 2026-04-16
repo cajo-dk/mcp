@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-reporter-server"
-version = "0.1.0"
+version = "0.1.1"
 description = "Minimal MCP server for Home Assistant that forwards reports to Power Automate."
 readme = "README.md"
 requires-python = ">=3.11"

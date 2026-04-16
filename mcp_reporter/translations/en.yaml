@@ -1,0 +1,4 @@
+configuration:
+  api_key:
+    name: API Key
+    description: API key required to access the MCP endpoint. Send it as X-API-Key or Authorization Bearer.

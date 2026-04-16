@@ -1,5 +1,5 @@
 name: "MCP Reporter"
-version: "0.1.0"
+version: "0.1.1"
 slug: "mcp_reporter"
 description: "Minimal MCP server add-on that forwards reports to Power Automate."
 url: "https://github.com/cajo-dk/mcp"
@@ -18,5 +18,7 @@ ports:
   8099/tcp: 8099
 ports_description:
   8099/tcp: "MCP HTTP endpoint"
-options: {}
-schema: {}
+options:
+  api_key: null
+schema:
+  api_key: password

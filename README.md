@@ -10,6 +10,15 @@ The server exposes one MCP tool:
 
 `postReport` accepts a JSON object and forwards it to the configured Power Automate webhook.
 
+## Authentication
+
+The add-on requires an API key configured from the Home Assistant add-on config page.
+
+Send the API key in either of these headers when calling the MCP endpoint:
+
+- `X-API-Key: <your-key>`
+- `Authorization: Bearer <your-key>`
+
 ## Local development
 
 ```powershell
