@@ -1,13 +1,13 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.12-alpine3.21
+ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 WORKDIR /app
 
-COPY pyproject.toml README.md /app/
-COPY src /app/src
+COPY app/pyproject.toml app/README.md /app/
+COPY app/src /app/src
 
 RUN pip install --no-cache-dir /app
 
-COPY mcp_reporter/rootfs /
+COPY rootfs /
 
 RUN chmod +x /etc/services.d/mcp-report/run
