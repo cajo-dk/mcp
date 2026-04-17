@@ -1,5 +1,5 @@
 name: "MCP Reporter"
-version: "0.1.1"
+version: "0.1.2"
 slug: "mcp_reporter"
 description: "Minimal MCP server add-on that forwards reports to Power Automate."
 url: "https://github.com/cajo-dk/mcp"

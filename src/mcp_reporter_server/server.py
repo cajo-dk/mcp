@@ -7,12 +7,13 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.routing import Mount
+from starlette.routing import Route
 import uvicorn
 
 DEFAULT_WEBHOOK_URL = (
@@ -22,7 +23,13 @@ DEFAULT_WEBHOOK_URL = (
 )
 
 SERVER_NAME = "home-assistant-mcp-reporter"
-mcp = FastMCP(SERVER_NAME, json_response=True, streamable_http_path="/")
+mcp = FastMCP(
+    SERVER_NAME,
+    json_response=True,
+    streamable_http_path="/",
+    transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+)
+mcp_http_app = mcp.streamable_http_app()
 OPTIONS_PATH = os.getenv("MCP_OPTIONS_PATH", "/data/options.json")
 
 
@@ -44,6 +51,27 @@ async def post_report(report: dict[str, Any]) -> dict[str, Any]:
         "status_code": response.status_code,
         "response_text": response.text,
     }
+
+
+def get_tool_list_payload() -> dict[str, Any]:
+    tools = []
+    for tool in mcp._tool_manager.list_tools():
+        tools.append(
+            {
+                "name": tool.name,
+                "title": tool.title,
+                "description": tool.description,
+                "parameters": tool.parameters,
+                "annotations": tool.annotations,
+                "meta": tool.meta,
+            }
+        )
+
+    return {"server": SERVER_NAME, "tools": tools}
+
+
+async def list_tools(_: Request) -> JSONResponse:
+    return JSONResponse(get_tool_list_payload())
 
 
 def load_api_key() -> str | None:
@@ -81,6 +109,9 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):
         self.api_key = api_key
 
     async def dispatch(self, request: Request, call_next):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+
         provided_key = extract_api_key(request)
         if provided_key != self.api_key:
             return JSONResponse(
@@ -106,7 +137,8 @@ def main() -> None:
 
     app = Starlette(
         routes=[
-            Mount("/mcp", app=mcp.streamable_http_app()),
+            Route("/tools", endpoint=list_tools, methods=["GET", "POST"]),
+            Route("/", endpoint=mcp_http_app, methods=["GET", "POST", "DELETE"]),
         ],
         lifespan=lifespan,
         middleware=[Middleware(ApiKeyMiddleware, api_key=api_key)],

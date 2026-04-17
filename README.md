@@ -28,14 +28,19 @@ pip install -e .
 python -m mcp_reporter_server
 ```
 
-The server listens on `0.0.0.0:8099` using streamable HTTP transport.
+The server listens on `0.0.0.0:8099` using streamable HTTP transport at `/`.
+
+For discovery, the server also exposes authenticated tool-list endpoints at:
+
+- `GET /tools`
+- `POST /tools`
 
 ## Home Assistant installation
 
 1. Add this repository as an add-on repository in Home Assistant.
 2. Install the `MCP Reporter` add-on.
 3. Start the add-on.
-4. Connect your MCP client to `http://homeassistant.local:8099/mcp` or the add-on host/IP on port `8099`.
+4. Connect your MCP client to `http://homeassistant.local:8099/` or the add-on host/IP on port `8099`.
 
 ## Notes
 
